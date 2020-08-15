@@ -12,6 +12,8 @@ JMP  = 0b01010100
 JEQ  = 0b01010101
 JNE  = 0b01010110
 AND  = 0b10101000
+OR   = 0b10101010
+XOR  = 0b10101011
 
 """CPU functionality."""
 
@@ -33,20 +35,22 @@ class CPU:
         self.fl = 0
 
         self.instructions = {}
-        self.instructions[HLT] = self.hlt
-        self.instructions[LDI] = self.ldi
-        self.instructions[PRN] = self.prn
-        self.instructions[ADD] = self.add
-        self.instructions[MUL] = self.mul
-        self.instructions[PUSH] =self.push
-        self.instructions[POP] = self.pop
-        self.instructions[CALL] =self.call
-        self.instructions[RET] = self.ret
-        self.instructions[CMP] = self.cmp
-        self.instructions[JMP] = self.jmp
-        self.instructions[JEQ] = self.jeq
-        self.instructions[JNE] = self.jne
-        self.instructions[AND] = self.aluand
+        self.instructions[HLT]  = self.hlt
+        self.instructions[LDI]  = self.ldi
+        self.instructions[PRN]  = self.prn
+        self.instructions[ADD]  = self.add
+        self.instructions[MUL]  = self.mul
+        self.instructions[PUSH] = self.push
+        self.instructions[POP]  = self.pop
+        self.instructions[CALL] = self.call
+        self.instructions[RET]  = self.ret
+        self.instructions[CMP]  = self.cmp
+        self.instructions[JMP]  = self.jmp
+        self.instructions[JEQ]  = self.jeq
+        self.instructions[JNE]  = self.jne
+        self.instructions[AND]  = self.aluand
+        self.instructions[OR]   = self.aluor
+        self.instructions[XOR]  = self.xor
 
     def load(self, path):
         """Load a program into memory."""
@@ -88,6 +92,10 @@ class CPU:
             else: self.fl = 0b0001
         elif op == "AND":
             self.reg[reg_a] &= self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] |= self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] ^= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -158,6 +166,12 @@ class CPU:
 
     def aluand(self, reg_a, reg_b):
         self.alu("AND", reg_a, reg_b)
+    
+    def aluor(self, reg_a, reg_b):
+        self.alu("OR", reg_a, reg_b)
+
+    def xor(self, reg_a, reg_b):
+        self.alu("XOR", reg_a, reg_b)
 
     def call(self, inst_address, _):
         # get the next instruction address
