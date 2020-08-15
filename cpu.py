@@ -8,6 +8,7 @@ POP  = 0b01000110
 CALL = 0b01010000
 RET  = 0b00010001
 CMP  = 0b10100111
+JMP  = 0b01010100
 
 """CPU functionality."""
 
@@ -39,6 +40,7 @@ class CPU:
         self.instructions[CALL] =self.call
         self.instructions[RET] = self.ret
         self.instructions[CMP] = self.cmp
+        self.instructions[JMP] = self.jmp
 
     def load(self, path):
         """Load a program into memory."""
@@ -126,7 +128,6 @@ class CPU:
     def ram_write(self, mdr, mar):
         self.ram[mar] = mdr
 
-
     def hlt(self, *_):
         print('Shutting Down... Goodbye')
         self.running = False
@@ -161,6 +162,9 @@ class CPU:
         ret_address = self.ram_read(self.reg[7])
         self.pc = ret_address
         self.reg[7] += 1
+
+    def jmp(self, reg, _):
+        self.pc = self.reg[reg]
 
     def push(self, reg, _):
         # decrement stack pointer
