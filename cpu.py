@@ -11,6 +11,7 @@ CMP  = 0b10100111
 JMP  = 0b01010100
 JEQ  = 0b01010101
 JNE  = 0b01010110
+AND  = 0b10101000
 
 """CPU functionality."""
 
@@ -45,6 +46,7 @@ class CPU:
         self.instructions[JMP] = self.jmp
         self.instructions[JEQ] = self.jeq
         self.instructions[JNE] = self.jne
+        self.instructions[AND] = self.aluand
 
     def load(self, path):
         """Load a program into memory."""
@@ -84,6 +86,8 @@ class CPU:
             elif self.reg[reg_a] > self.reg[reg_b]:
                 self.fl = 0b0010
             else: self.fl = 0b0001
+        elif op == "AND":
+            self.reg[reg_a] &= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -151,6 +155,9 @@ class CPU:
 
     def cmp(self, op_a, op_b):
         self.alu("CMP", op_a, op_b)
+
+    def aluand(self, reg_a, reg_b):
+        self.alu("AND", reg_a, reg_b)
 
     def call(self, inst_address, _):
         # get the next instruction address
