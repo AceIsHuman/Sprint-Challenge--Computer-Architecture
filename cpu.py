@@ -15,6 +15,8 @@ AND  = 0b10101000
 OR   = 0b10101010
 XOR  = 0b10101011
 NOT  = 0b01101001
+SHL  = 0b10101100
+SHR  = 0B10101101
 
 """CPU functionality."""
 
@@ -53,6 +55,8 @@ class CPU:
         self.instructions[OR]   = self.aluor
         self.instructions[XOR]  = self.xor
         self.instructions[NOT]  = self.alunot
+        self.instructions[SHL]  = self.shl
+        self.instructions[SHR]  = self.shr
 
     def load(self, path):
         """Load a program into memory."""
@@ -100,6 +104,10 @@ class CPU:
             self.reg[reg_a] ^= self.reg[reg_b]
         elif op == "NOT":
             self.reg[reg_a] = ~self.reg[reg_a]
+        elif op == "SHL":
+            self.reg[reg_a] <<= self.reg[reg_b]
+        elif op == "SHR":
+            self.reg[reg_a] >>= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -179,6 +187,12 @@ class CPU:
 
     def alunot(self, reg, _):
         self.alu("NOT", reg, _)
+
+    def shl(self, reg_a, reg_b):
+        self.alu("SHL", reg_a, reg_b)
+
+    def shr(self, reg_a, reg_b):
+        self.alu("SHR", reg_a, reg_b)
 
     def call(self, inst_address, _):
         # get the next instruction address
