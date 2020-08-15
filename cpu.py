@@ -16,7 +16,8 @@ OR   = 0b10101010
 XOR  = 0b10101011
 NOT  = 0b01101001
 SHL  = 0b10101100
-SHR  = 0B10101101
+SHR  = 0b10101101
+MOD  = 0b10100010
 
 """CPU functionality."""
 
@@ -57,6 +58,7 @@ class CPU:
         self.instructions[NOT]  = self.alunot
         self.instructions[SHL]  = self.shl
         self.instructions[SHR]  = self.shr
+        self.instructions[MOD]  = self.mod
 
     def load(self, path):
         """Load a program into memory."""
@@ -108,6 +110,13 @@ class CPU:
             self.reg[reg_a] <<= self.reg[reg_b]
         elif op == "SHR":
             self.reg[reg_a] >>= self.reg[reg_b]
+        elif op == "MOD":
+            divisor = self.reg[reg_b]
+            if divisor == 0:
+                print(f'Cannot divide {self.reg[reg_a} by 0')
+                sys.exit(1)
+            self.reg[reg_a] %= divisor
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -193,6 +202,9 @@ class CPU:
 
     def shr(self, reg_a, reg_b):
         self.alu("SHR", reg_a, reg_b)
+
+    def mod(self, reg_a, reg_b):
+        self.alu("MOD", reg_a, reg_b)
 
     def call(self, inst_address, _):
         # get the next instruction address
