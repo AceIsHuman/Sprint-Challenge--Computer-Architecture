@@ -7,6 +7,7 @@ PUSH = 0b01000101
 POP  = 0b01000110
 CALL = 0b01010000
 RET  = 0b00010001
+CMP  = 0b10100111
 
 """CPU functionality."""
 
@@ -18,13 +19,14 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.ram = [0] * 256
-        self.reg = [None] * 8
+        self.reg = [0] * 8
         # R5 is reserved as the interrupt mask (IM)
         # R6 is reserved as the interrupt status (IS)
         # R7 is reserved as the stack pointer (SP)
         self.reg[7] = 0xF4
         self.pc = 0
         self.running = False
+        self.fl = 0
 
         self.instructions = {}
         self.instructions[HLT] = self.hlt
@@ -36,6 +38,7 @@ class CPU:
         self.instructions[POP] = self.pop
         self.instructions[CALL] =self.call
         self.instructions[RET] = self.ret
+        self.instructions[CMP] = self.cmp
 
     def load(self, path):
         """Load a program into memory."""
@@ -69,6 +72,12 @@ class CPU:
         # elif op == "SUB": etc
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "CMP":
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.fl = 0b0100
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                self.fl = 0b0010
+            else: self.fl = 0b0001
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -134,6 +143,9 @@ class CPU:
 
     def mul(self, op_a, op_b):
         self.alu("MUL", op_a, op_b)
+
+    def cmp(self, op_a, op_b):
+        self.alu("CMP", op_a, op_b)
 
     def call(self, inst_address, _):
         # get the next instruction address
