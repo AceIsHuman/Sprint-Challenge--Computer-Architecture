@@ -9,7 +9,8 @@ CALL = 0b01010000
 RET  = 0b00010001
 CMP  = 0b10100111
 JMP  = 0b01010100
-JEQ  = 0B01010101
+JEQ  = 0b01010101
+JNE  = 0b01010110
 
 """CPU functionality."""
 
@@ -43,6 +44,7 @@ class CPU:
         self.instructions[CMP] = self.cmp
         self.instructions[JMP] = self.jmp
         self.instructions[JEQ] = self.jeq
+        self.instructions[JNE] = self.jne
 
     def load(self, path):
         """Load a program into memory."""
@@ -171,6 +173,15 @@ class CPU:
     def jeq(self, reg, _):
         if self.fl == 0b0001:
             self.pc = self.reg[reg]
+        else:
+            self.pc = self.pc + 2
+
+    def jne(self, reg, _):
+        e = self.fl & 0b0001
+        if not e:
+            self.pc = self.reg[reg]
+        else:
+            self.pc = self.pc + 2
 
     def push(self, reg, _):
         # decrement stack pointer
